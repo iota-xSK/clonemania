@@ -62,6 +62,18 @@ function level.new(n, m)
 
 	end
 
+	function newlevel:is_solved()
+		local dotcount = 0
+		for i=1,n do
+			for j=1,m do
+				if self.ground:get(i, j) == "." and self.items:get(i, j) ~= "X" then
+					dotcount = dotcount+ 1
+				end
+			end
+		end
+		return dotcount ~= 0 
+	end
+
 	function newlevel:move(direction)
 		local dxy = {
 			left = {0, -1},
@@ -80,7 +92,7 @@ function level.new(n, m)
 						end
 					elseif self.items:get(i,j) == "X" then
 						if i+1 <= n and i-1 > 0 then
-							if self.items:get(i+1,j) == "@" and self.items:get(i-1, j) ~= "X" and self.ground:get(i-1, j) ~= "#" then
+							if self.items:get(i+1,j) == "@" and self.items:get(i-1, j) ~= "X" and self.ground:get(i-1, j) ~= "#" and self.items:get(i-1, j) ~= "@"then
 								self.items:set(i,j, " ")
 								self.items:set(i-1,j, "X")
 							end
@@ -99,7 +111,7 @@ function level.new(n, m)
 							end
 						elseif self.items:get(i,j) == "X" then
 							if i-1 > 0 then
-								if self.items:get(i-1,j) == "@" and self.items:get(i+1, j) ~= "X" and self.ground:get(i+1, j) ~= "#"  then
+								if self.items:get(i-1,j) == "@" and self.items:get(i+1, j) ~= "X" and self.ground:get(i+1, j) ~= "#" and self.items:get(i+1,j) ~= "@"  then
 									self.items:set(i,j, " ")
 									self.items:set(i+1,j, "X")
 								end
@@ -118,7 +130,7 @@ function level.new(n, m)
 						end
 					elseif self.items:get(i,j) == "X" then
 						if j+1 <= m and j-1 > 0 then
-							if self.items:get(i,j+1) == "@" and self.items:get(i, j-1) ~= "X" and self.ground:get(i, j-1) ~= "#" then
+							if self.items:get(i,j+1) == "@" and self.items:get(i, j-1) ~= "X" and self.ground:get(i, j-1) ~= "#" and self.items:get(i, j-1) ~= "@"then
 								self.items:set(i,j, " ")
 								self.items:set(i,j-1, "X")
 							end
@@ -136,7 +148,7 @@ function level.new(n, m)
 						end
 					elseif self.items:get(i,j) == "X" then
 						if j+1 <= m and j-1 > 0 then
-							if self.items:get(i,j-1) == "@" and self.items:get(i, j+1) ~= "X" and self.ground:get(i, j+1) ~= "#" then
+							if self.items:get(i,j-1) == "@" and self.items:get(i, j+1) ~= "X" and self.ground:get(i, j+1) ~= "#" and self.items:get(i,j+1) ~= "@" then
 								self.items:set(i,j, " ")
 								self.items:set(i,j+1, "X")
 							end
@@ -146,6 +158,8 @@ function level.new(n, m)
 			end
 		end
 	end
+
+
 
 	return newlevel
 end

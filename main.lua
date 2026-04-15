@@ -1,15 +1,13 @@
 local levellib = require("level")
 
 function love.load()
-	level = levellib.new(7, 5)
+	level = levellib.new(5, 5)
 	level:fromstr({
-		"  X  ",
-		"#X   ",
-		" X@@ ",
-		"  @@ ",
-		"   X ",
-		"     ",
-		"     ",
+		"##.##",
+		"#   #",
+		"#@X@#",
+		"#   .",
+		"#####",
 	})
 end
 
