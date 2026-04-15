@@ -4,12 +4,12 @@ function love.load()
 	level = levellib.new(7, 5)
 	level:fromstr({
 		"  X  ",
-		"#X X ",
-		"   @ ",
-		"   @ ",
-		"   @ ",
-		"   @ ",
-		"   @ ",
+		"#X   ",
+		" X@@ ",
+		"  @@ ",
+		"   X ",
+		"     ",
+		"     ",
 	})
 end
 
