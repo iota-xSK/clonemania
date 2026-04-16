@@ -5,6 +5,7 @@ function level.new(n, m)
 	local newlevel = {
 		ground = gridlib.new(n, m),
 		items = gridlib.new(n, m),
+		undostack = {}
 	}
 
 	function newlevel:fromstr(strtable)
@@ -81,6 +82,8 @@ function level.new(n, m)
 			up = {-1, 0},
 			down = {1, 0}
 		}
+
+		table.insert(self.undostack, self.items:deepclone())
 
 		if direction == "up" then
 			for i=1,n do
@@ -160,6 +163,13 @@ function level.new(n, m)
 	end
 
 
+	function newlevel:undo()
+		if #self.undostack >= 1 then
+			print(#self.undostack, self.items)
+			self.items = self.undostack[#self.undostack]
+			self.undostack[#self.undostack] = nil
+		end
+	end
 
 	return newlevel
 end

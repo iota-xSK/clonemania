@@ -1,13 +1,24 @@
 local levellib = require("level")
 
 function love.load()
-	level = levellib.new(5, 5)
-	level:fromstr({
+	level1 = levellib.new(5, 5)
+	level1:fromstr({
 		"##.##",
 		"#   #",
 		"#@X@#",
-		"#   .",
+		"# X .",
 		"#####",
+	})
+	level = levellib.new(8, 7)
+	level:fromstr({
+		"#######",
+		"#   @ #",
+		"# X @ #",
+		"### ###",
+		"#  @  #",
+		"# X.. #",
+		"#     #",
+		"#######"
 	})
 end
 
@@ -23,6 +34,8 @@ function love.keypressed( key, scancode, isrepeat )
 		level:move("left")
 	elseif key == "right" then
 		level:move("right")
+	elseif key == "u" then
+		level:undo()
 	end
 end
 

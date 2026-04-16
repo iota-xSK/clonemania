@@ -33,6 +33,17 @@ function grid.new(n, m) -- create new grid of width n, height m
 
 		self[y][x] = cell
 	end
+
+	function newgrid:deepclone()
+		local clone = grid.new(n, m)
+		for i=1,m do
+			clone[i] = {}
+			for j=1,n do
+				clone[i][j] = self[i][j] 
+			end
+		end
+		return clone
+	end
 	return newgrid
 end
 
