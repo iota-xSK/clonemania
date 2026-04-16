@@ -165,7 +165,6 @@ function level.new(n, m)
 
 	function newlevel:undo()
 		if #self.undostack >= 1 then
-			print(#self.undostack, self.items)
 			self.items = self.undostack[#self.undostack]
 			self.undostack[#self.undostack] = nil
 		end
