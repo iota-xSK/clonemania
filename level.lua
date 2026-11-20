@@ -1,5 +1,66 @@
 local gridlib = require("grid")
 local level = {}
+local util = {}
+
+function util.file_exists(file)
+	local f = io.open(file, "rb")
+	if f then
+		f:close()
+	end
+	return f ~= nil
+end
+
+function util.lines_from(file)
+	if not util.file_exists(file) then
+		return {}
+	end
+	local lines = {}
+	for line in io.lines(file) do
+		lines[#lines + 1] = line
+	end
+	return lines
+end
+
+function util.parse_number(str, idx)
+	local n = 0
+	for i = idx or 1, string.len(str) do
+		if string.byte(str, i) >= 48 and string.byte(str, i) <= 57 then
+			n = n * 10 + string.byte(str, i) - 48
+		elseif string.byte(str, i) == 32 or string.byte(str, i) == 10 then
+			return n, i
+		else
+			return nil
+		end
+	end
+	return n
+end
+
+function level.deserialize(filename)
+	local filelines = util.lines_from(filename)
+
+	local n, idx = util.parse_number(filelines[1])
+	if not n then
+		print("couldn't parse n")
+		return nil
+	end
+
+	local m, _ = util.parse_number(filelines[1], idx + 1)
+
+	if not m then
+		print("couldn't parse m")
+		return nil
+	end
+
+	local lvl = level.new(n, m)
+	local serialized = {}
+
+	for i = 2, #filelines do
+		serialized[i - 1] = filelines[i]
+	end
+
+	lvl:fromstr(serialized)
+	return lvl
+end
 
 function level.new(n, m)
 	local newlevel = {

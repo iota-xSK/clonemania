@@ -1,31 +1,12 @@
 local levellib = require("level")
 
 function love.load()
-	level1 = levellib.new(5, 5)
-	level1:fromstr({
-		"##.##",
-		"#   #",
-		"#@X@#",
-		"# X .",
-		"#####",
-	})
-	level = levellib.new(8, 7)
-	level:fromstr({
-		"#######",
-		"#   @ #",
-		"# X @ #",
-		"### ###",
-		"#  @  #",
-		"# X.. #",
-		"#     #",
-		"#######"
-	})
+	level = levellib.deserialize("lvl2.txt")
 end
 
-function love.update(dt)
-end
+function love.update(dt) end
 
-function love.keypressed( key, scancode, isrepeat )
+function love.keypressed(key, scancode, isrepeat)
 	if key == "up" then
 		level:move("up")
 	elseif key == "down" then
