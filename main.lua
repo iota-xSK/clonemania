@@ -1,7 +1,7 @@
 local levellib = require("level")
 
 function love.load()
-	level = levellib.deserialize("lvl2.txt")
+	level = levellib.deserialize("lvl3.txt")
 end
 
 function love.update(dt) end
