@@ -1,3 +1,4 @@
+#[derive(Eq, Hash, PartialEq, Clone)]
 pub struct Bitboard {
     columns: u8,
     rows: u8,

@@ -2,6 +2,7 @@ use crate::bitboard::Bitboard;
 use std::fmt;
 use std::fmt::Formatter;
 
+#[derive(Clone)]
 pub struct Game {
     rows: u8,
     columns: u8,
@@ -104,8 +105,8 @@ impl Game {
 
         let mut dimensions_str = lines.next()?.split_ascii_whitespace();
 
-        columns = dimensions_str.next()?.parse::<u8>().ok()?;
         rows = dimensions_str.next()?.parse::<u8>().ok()?;
+        columns = dimensions_str.next()?.parse::<u8>().ok()?;
         if let Some(_) = dimensions_str.next() {
             return None;
         };
