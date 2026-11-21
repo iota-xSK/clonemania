@@ -30,6 +30,37 @@ impl Direction {
 }
 
 impl Game {
+    pub fn step(&mut self, direction: Direction) {
+        let (dx, dy) = direction.to_tuple();
+
+        let mut outer_iter: Box<dyn Iterator<Item = isize>> = if dx >= 0 {
+            Box::new((0..(self.rows as isize)).rev())
+        } else {
+            Box::new(0..(self.rows as isize))
+        };
+
+        for row in outer_iter {
+            let mut inner_iter: Box<dyn Iterator<Item = isize>> = if dy >= 0 {
+                Box::new((0..self.columns as isize).rev())
+            } else {
+                Box::new(0..self.columns as isize)
+            };
+            for column in inner_iter {
+                if 
+                    (column - dx as isize) >= 0
+                    && (column - dx as isize) < self.columns.into()
+                    && (row - dy as isize) >= 0
+                    && (row - dy as isize) < self.rows.into()
+                {
+                    if let Some(false) = self.walls.get(column as u8, row as u8) 
+                        && let Some(true) = self.clones.get((column - dx as isize) as u8, (row - dy as isize) as u8) {
+                            self.clones.set((column - dx as isize) as u8, (row - dy as isize) as u8, false);
+                            self.clones.set(column as u8, row as u8, true);
+                    }
+                }
+            }
+        }
+    }
     pub fn from_string(string: &str) -> Option<Self> {
         let mut lines = string.lines();
 
@@ -127,7 +158,7 @@ impl fmt::Debug for Game {
 
 #[cfg(test)]
 mod test {
-    use crate::game::Game;
+    use crate::game::{Game, Direction};
     #[test]
     fn from_and_to() {
         let level_text = "5 5\n\
@@ -141,5 +172,38 @@ mod test {
         let new_string = format!("{:?}", game);
 
         assert_eq!(level_text, new_string);
+    }
+
+    #[test]
+    fn borders_are_walls() {
+        let level_text = "3 3\n   \n @ \n   ";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..3 {
+            game.step(Direction::Right);
+            println!("{:?}", game);
+        }
+        let level_after = "3 3\n   \n  @\n   ";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+
+    #[test]
+    fn walls_stop_clones() {
+        let level_text = "3 3\n # \n#@#\n # ";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        game.step(Direction::Right);
+        game.step(Direction::Left);
+        game.step(Direction::Up);
+        game.step(Direction::Down);
+        assert_eq!(level_text, format!("{:?}", game));
+    }
+
+    fn clones_move_together() {
+        let level_text = "3 3\n   \n @@\n   ";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        game.step(Direction::Right);
+        game.step(Direction::Left);
+        game.step(Direction::Up);
+        let level_after = "3 3\n@@ \n   \n   ";
+        assert_eq!(level_after, format!("{:?}", game));
     }
 }
