@@ -147,7 +147,7 @@ function level.new(n, m)
 				end
 			end
 		end
-		return dotcount ~= 0
+		return dotcount == 0
 	end
 
 	function newlevel:move(direction)
