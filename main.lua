@@ -6,21 +6,26 @@ end
 
 function love.update(dt) end
 
-function love.keypressed(key, scancode, isrepeat)
-	if key == "up" then
+local key_to_action = {
+	up = function()
 		level:move("up")
-	elseif key == "down" then
+	end,
+	down = function()
 		level:move("down")
-	elseif key == "left" then
+	end,
+	left = function()
 		level:move("left")
-	elseif key == "right" then
+	end,
+	right = function()
 		level:move("right")
-	elseif key == "u" then
+	end,
+	u = function()
 		level:undo()
-	end
-
-	if level:is_solved() then
-		print("solved")
+	end,
+}
+function love.keypressed(key, scancode, isrepeat)
+	if key_to_action[key] then
+		key_to_action[key]()
 	end
 end
 
