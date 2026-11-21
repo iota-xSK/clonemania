@@ -8,7 +8,7 @@ pub struct Game {
     pub clones: Bitboard,
     pub boxes: Bitboard,
     pub walls: Bitboard,
-    pub win_position: Bitboard
+    pub targets: Bitboard
 }
 
 pub enum Direction {
@@ -83,6 +83,19 @@ impl Game {
             }
         }
     }
+    pub fn is_solved(&self) {
+        let mut is_solved = true;
+        for column in 0..self.columns {
+            for row in 0..self.rows {
+                if let Some(true) = self.targets.get(column, row)
+                    && let Some(false) = self.boxes.get(column, row) {
+                        is_solved = false;
+                        return is_solved;
+                }
+            }
+        }
+        return is_solved;
+    }
     pub fn from_string(string: &str) -> Option<Self> {
         let mut lines = string.lines();
 
@@ -100,7 +113,7 @@ impl Game {
         let mut walls = Bitboard::new(columns, rows);
         let mut boxes = Bitboard::new(columns, rows);
         let mut clones = Bitboard::new(columns, rows);
-        let mut win_position = Bitboard::new(columns, rows);
+        let mut targets = Bitboard::new(columns, rows);
         for i in 0..rows {
             if let Some(line) = lines.next() {
                 let mut chars = line.chars();
@@ -117,7 +130,7 @@ impl Game {
                             boxes.set(j, i, true);
                         },
                         Some('.') => {
-                            win_position.set(j, i, true);
+                            targets.set(j, i, true);
                         },
                         _ => {
                             return None;
@@ -140,7 +153,7 @@ impl Game {
             walls,
             boxes,
             clones,
-            win_position
+            targets
         })
     }
 }
@@ -162,7 +175,7 @@ impl fmt::Debug for Game {
                     'X'
                 } else if let Some(true) = self.clones.get(j, i){
                     '@'
-                } else if let Some(true) = self.win_position.get(j, i) {
+                } else if let Some(true) = self.targets.get(j, i) {
                     '.'
                 } else {
                     ' '
