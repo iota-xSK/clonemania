@@ -16,8 +16,8 @@ fn main() {
         .expect("Should have been able to read the file");
     let game = Game::from_string(&contents).expect("couldn't parse game");
 
-    if solve(game) {
-        println!("it is solvable");
+    if let Some(depth) = solve(game) {
+        println!("it is solvable in {depth} steps");
     } else {
         println!("it is not solvable");
     }
