@@ -34,16 +34,16 @@ impl Game {
         let (dx, dy) = direction.to_tuple();
 
         let mut outer_iter: Box<dyn Iterator<Item = isize>> = if dx >= 0 {
-            Box::new((0..(self.rows as isize)).rev())
+            Box::new((0..(self.rows as isize)))
         } else {
-            Box::new(0..(self.rows as isize))
+            Box::new((0..(self.rows as isize)).rev())
         };
 
         for row in outer_iter {
             let mut inner_iter: Box<dyn Iterator<Item = isize>> = if dy >= 0 {
-                Box::new((0..self.columns as isize).rev())
+                Box::new((0..self.columns as isize))
             } else {
-                Box::new(0..self.columns as isize)
+                Box::new((0..self.columns as isize).rev())
             };
             for column in inner_iter {
                 if 
@@ -52,10 +52,32 @@ impl Game {
                     && (row - dy as isize) >= 0
                     && (row - dy as isize) < self.rows.into()
                 {
+                    // pull clone into this spot if it is empty and there is a clone to be pulled
                     if let Some(false) = self.walls.get(column as u8, row as u8) 
+                        && let Some(false) = self.clones.get(column as u8, row as u8)
+                        && let Some(false) = self.boxes.get(column as u8, row as u8)
                         && let Some(true) = self.clones.get((column - dx as isize) as u8, (row - dy as isize) as u8) {
                             self.clones.set((column - dx as isize) as u8, (row - dy as isize) as u8, false);
                             self.clones.set(column as u8, row as u8, true);
+                    }
+
+                    // pull box into this spot if it is empty and there is a clone to push it
+                    if (column - dx as isize) >= 0
+                        && (column - dx as isize) < self.columns.into()
+                        && (row - dy as isize) >= 0
+                        && (row - dy as isize) < self.rows.into()
+                        && (column - 2*dx as isize) >= 0
+                        && (column - 2*dx as isize) < self.columns.into()
+                        && (row - 2*dy as isize) >= 0
+                        && (row - 2*dy as isize) < self.rows.into()
+                        {
+                            if let Some(true) = self.boxes.get((column - dx as isize) as u8, (row - dy as isize) as u8)
+                                && let Some(false) = self.walls.get(column as u8, row as u8)
+                                && let Some(false) = self.boxes.get(column as u8, row as u8)
+                                && let Some(true) = self.clones.get((column - 2*dx as isize) as u8, (row - 2*dy as isize) as u8) {
+                                    self.boxes.set(column as u8, row as u8, true);
+                                    self.boxes.set((column - dx as isize) as u8, (row - dy as isize) as u8, false);
+                            }
                     }
                 }
             }
@@ -197,6 +219,7 @@ mod test {
         assert_eq!(level_text, format!("{:?}", game));
     }
 
+    #[test]
     fn clones_move_together() {
         let level_text = "3 3\n   \n @@\n   ";
         let mut game = Game::from_string(level_text).expect("couldn't parse game");
@@ -205,5 +228,79 @@ mod test {
         game.step(Direction::Up);
         let level_after = "3 3\n@@ \n   \n   ";
         assert_eq!(level_after, format!("{:?}", game));
+    }
+
+    #[test]
+    fn clones_push_boxes_right() {
+        let level_text = "4 1\n@X  ";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Right);
+        }
+        let level_after = "4 1\n  @X";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+    #[test]
+    fn clones_push_boxes_left() {
+        let level_text = "4 1\n X @";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Left);
+        }
+        let level_after = "4 1\nX@  ";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+
+    #[test]
+    fn clones_push_boxes_up() {
+        let level_text = "1 4\n \nX\n \n@";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Up);
+        }
+        let level_after = "1 4\nX\n@\n \n ";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+
+    #[test]
+    fn clones_push_boxes_down() {
+        let level_text = "1 4\n \n@\nX\n ";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Down);
+        }
+        let level_after = "1 4\n \n \n@\nX";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+
+    #[test]
+    fn clones_dont_push_multiple_boxes() {
+        let level_text = "4 1\nXX @";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Left);
+        }
+        let level_after = "4 1\nXX@ ";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+
+    #[test]
+    fn clones_stop_each_other() {
+        let level_text = "4 1\nXX@@";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Left);
+        }
+        let level_after = "4 1\nXX@@";
+        assert_eq!(level_after, format!("{:?}", game));
+    }
+    #[test]
+    fn walls_stop_boxes() {
+        let level_text = "4 1\n#X@ ";
+        let mut game = Game::from_string(level_text).expect("couldn't parse game");
+        for _ in 0..6 {
+            game.step(Direction::Left);
+        }
+        assert_eq!(level_text, format!("{:?}", game));
     }
 }
