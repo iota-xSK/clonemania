@@ -83,7 +83,7 @@ impl Game {
             }
         }
     }
-    pub fn is_solved(&self) {
+    pub fn is_solved(&self) -> bool {
         let mut is_solved = true;
         for column in 0..self.columns {
             for row in 0..self.rows {
