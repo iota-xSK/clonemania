@@ -86,6 +86,8 @@ function level.new(n, m)
 	end
 
 	function newlevel:draw(x, y, width)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.rectangle("line", x - 2, y - 2, n * width + 2, m * width + 2)
 		for i = 1, n do
 			for j = 1, m do
 				local groundthing = self.ground:get(i, j)
