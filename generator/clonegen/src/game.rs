@@ -33,15 +33,15 @@ impl Game {
     pub fn step(&mut self, direction: Direction) {
         let (dx, dy) = direction.to_tuple();
 
-        let mut outer_iter: Box<dyn Iterator<Item = isize>> = if dx >= 0 {
-            Box::new((0..(self.rows as isize)))
+        let outer_iter: Box<dyn Iterator<Item = isize>> = if dx >= 0 {
+            Box::new(0..(self.rows as isize))
         } else {
             Box::new((0..(self.rows as isize)).rev())
         };
 
         for row in outer_iter {
-            let mut inner_iter: Box<dyn Iterator<Item = isize>> = if dy >= 0 {
-                Box::new((0..self.columns as isize))
+            let inner_iter: Box<dyn Iterator<Item = isize>> = if dy >= 0 {
+                Box::new(0..self.columns as isize)
             } else {
                 Box::new((0..self.columns as isize).rev())
             };
